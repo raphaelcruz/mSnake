@@ -1,0 +1,7 @@
+mSnake
+ist ein rudimentärer Snake Clone in Matlab (leider nicht unter Octave lauffähig)
+
+mSnake.m enthält ein Skript, zur Ausführung in Matlab
+
+mSnakeOOP.m ist ein objekt orientierter Ansatz, der aber nur aus einer
+Klasse besteht und deshalb etwas witzlos ist
