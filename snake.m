@@ -13,7 +13,7 @@ classdef snake
     end
 
     methods
-       
+
         function obj = snake
             obj.fig = figure('NumberTitle','off','Menubar','none',...
                    'Name','mSnake',...
@@ -120,7 +120,7 @@ classdef snake
 
                 obj.drawSegments()
                 obj.drawHead()
-                
+
                 x=obj.food(1);
                 y=obj.food(2);
                 patch([x x+1 x+1 x], [y y y+1 y+1], 'y')
@@ -137,7 +137,7 @@ classdef snake
             i = i'; j = j';
             patch([i; i+1 ; i+1; i], [ j; j; j+1; j+1], 'g')
         end
-        
+
         function drawHead(obj)
         global key
             x=obj.pos(1);
@@ -162,7 +162,7 @@ classdef snake
             b=(b-y-0.5)*scale+y+0.5;
             patch(a,b,'g')
         end
-        
+
         function obj = eat(obj)
             if obj.food(1) == obj.pos(1) && obj.food(2) == obj.pos(2)
                 obj.len = obj.len + 1;
@@ -173,7 +173,7 @@ classdef snake
                 obj.lost = true;
             end
         end
-        
+
         function newFood = generateFood(obj)
             A = obj.map;
             A(obj.pos(1),obj.pos(2))=1;
