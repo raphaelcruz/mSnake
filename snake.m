@@ -174,11 +174,15 @@ classdef snake
         end
         
         function newFood = generateFood(obj)
-            newFood = obj.pos;
-            while obj.map(newFood(1),newFood(2)) || ...
-                    (newFood(1)==obj.pos(1) && newFood(2)==obj.pos(2))
-                newFood = [randi([1 obj.X-1]), randi([1 obj.Y-1])];
-            end
+            A = obj.map;
+            A(obj.pos(1),obj.pos(2))=1;
+            [i,j] = find(A == 0);
+            a = randi([1 length(i)]);
+            newFood = [i(a) j(a)];
+            %while obj.map(newFood(1),newFood(2)) || ...
+            %        (newFood(1)==obj.pos(1) && newFood(2)==obj.pos(2))
+            %    newFood = [randi([1 obj.X-1]), randi([1 obj.Y-1])];
+            %end
         return
         end
 
