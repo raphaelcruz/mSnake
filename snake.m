@@ -1,14 +1,14 @@
 classdef snake
-   properties
-       pos = [13 13]
-       X = 25
-       Y = 25
-       map = zeros(25,25);
-       len = 3
-       fig
-   end
+    properties
+        pos = [13 13]
+        X = 25
+        Y = 25
+        map = zeros(25,25);
+        len = 3
+        fig
+    end
 
-   methods
+    methods
        
         function obj = snake
             obj.fig = figure('NumberTitle','off','Menubar','none',...
@@ -36,7 +36,7 @@ classdef snake
 
             end
         end
-        
+
         function start(obj)
             while true
                 obj = obj.steuern();
@@ -50,39 +50,57 @@ classdef snake
             global key
             switch key
                 case 'w'
-                    obj.pos(2)=obj.pos(2)+1;
+                    if obj.pos(2) < obj.Y-1
+                        obj.pos(2)=obj.pos(2)+1;
+                    else
+                        obj.pos(2)=1;
+                    end
                 case 's'
-                    obj.pos(2)=obj.pos(2)-1;
+                    if obj.pos(2) > 1
+                        obj.pos(2)=obj.pos(2)-1;
+                    else
+                        obj.pos(2)=obj.Y-1;
+                    end
                 case 'd'
-                    obj.pos(1)=obj.pos(1)+1;
+                    if obj.pos(1) < obj.X-1
+                        obj.pos(1)=obj.pos(1)+1;
+                    else
+                        obj.pos(1)=1;
+                    end
                 case 'a'
-                    obj.pos(1)=obj.pos(1)-1;
+                    if obj.pos(1) > 1
+                        obj.pos(1)=obj.pos(1)-1;
+                    else
+                        obj.pos(1)=obj.Y-1;
+                    end
             end
             disp(key)
         return
         end
-        
+
         function obj = updateMap(obj)
             obj.map(obj.pos(1), obj.pos(2)) = obj.len + 1;
             obj.map = obj.map - 1;
             obj.map(obj.map<0) = 0;
         return
         end
-        
+
         function drawSnake(obj)
-            patch([0 obj.X obj.X 0], [0 0 obj.Y obj.Y], 'k')
-            
+            patch([1 obj.X obj.X 1], [1 1 obj.Y obj.Y], 'k')
+            axis('tight')
+
             obj.drawSegments()
-            
+
             x=obj.pos(1);
             y=obj.pos(2);
             patch([x x+1 x+1 x], [y y y+1 y+1], 'r')
         end
-        
+
         function drawSegments(obj)
             [i,j] = find(obj.map>0);
             i = i'; j = j';
             patch([i; i+1 ; i+1; i], [ j; j; j+1; j+1], 'g')
         end
+
     end
 end
