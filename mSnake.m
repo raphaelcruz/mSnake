@@ -11,7 +11,7 @@ global X Y len punkte level lost
            'KeyPressFcn',@(src,evt)getKey(evt));
 
     pos = [13 13];
-    map = zeros(X,Y);
+    map = zeros(X-1,Y-1);
     food = generateFood(pos, map);
 
     while true
@@ -107,13 +107,10 @@ global X Y punkte len level
 
     drawSegments(map)
     drawHead(pos)
-
-    x=food(1);
-    y=food(2);
-    patch([x x+1 x+1 x], [y y y+1 y+1], 'y')
+    drawFood(food)
 
     text( 1, 26, ['Punkte: ', num2str(punkte)], 'BackgroundColor','w');
-    text(16, 26, ['Länge : ', num2str(len)] , 'BackgroundColor','w');
+    text(16, 26, ['Länge : ', num2str(len)]   , 'BackgroundColor','w');
     text(11, 26, ['Level : ', num2str(level)] , 'BackgroundColor','w');
     drawnow
 end
@@ -122,6 +119,12 @@ function drawSegments(map)
     [i,j] = find(map > 0);
     i = i'; j = j';
     patch([i; i+1 ; i+1; i], [ j; j; j+1; j+1], 'g')
+end
+
+function drawFood(food)
+    x=food(1);
+    y=food(2);
+    patch([x x+1 x+1 x], [y y y+1 y+1], 'y')
 end
 
 function drawHead(pos)
@@ -163,10 +166,8 @@ function lost = testCollision(pos, map)
 end
 
 function newFood = generateFood(pos, map)
-    A = map;
-    A(pos(1),pos(2))=1;
-    [i,j] = find(A == 0);
+    map(pos(1),pos(2))=1;
+    [i,j] = find(map == 0);
     a = randi([1 length(i)]);
     newFood = [i(a) j(a)];
 end
-
