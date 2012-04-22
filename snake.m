@@ -9,6 +9,7 @@ classdef snake
         fig
         punkte = 0
         level
+        lost = false
     end
 
     methods
@@ -58,9 +59,12 @@ classdef snake
             while true
                 obj.level = level;
                 obj = obj.steer();
-                obj = obj.updateMap();
                 obj = obj.eat();
+                obj = obj.updateMap();
                 obj.drawSnake();
+                if obj.lost
+                    break
+                end
                 pause(1/level/2)
             end
         end
@@ -105,23 +109,27 @@ classdef snake
         end
 
         function drawSnake(obj)
-            clf
-            patch([1 obj.X obj.X 1], [1 1 obj.Y obj.Y], 'k')
-            axis('tight')
+            if obj.lost
+                text(3, 12, 'Verloren' , 'FontSize', 72 ,'Color','r');
+            else
+                clf
+                patch([1 obj.X obj.X 1], [1 1 obj.Y obj.Y], 'k')
+                axis('tight')
 
-            obj.drawSegments()
+                obj.drawSegments()
 
-            x=obj.pos(1);
-            y=obj.pos(2);
-            patch([x x+1 x+1 x], [y y y+1 y+1], 'r')
-            
-            x=obj.food(1);
-            y=obj.food(2);
-            patch([x x+1 x+1 x], [y y y+1 y+1], 'y')
-            
-            text( 1, 26, ['Punkte: ', num2str(obj.punkte)], 'BackgroundColor','w');
-            text(11, 26, ['Länge : ', num2str(obj.len)] , 'BackgroundColor','w');
-            text(11, 26, ['Level : ', num2str(obj.level)] , 'BackgroundColor','w');
+                x=obj.pos(1);
+                y=obj.pos(2);
+                patch([x x+1 x+1 x], [y y y+1 y+1], 'r')
+
+                x=obj.food(1);
+                y=obj.food(2);
+                patch([x x+1 x+1 x], [y y y+1 y+1], 'y')
+
+                text( 1, 26, ['Punkte: ', num2str(obj.punkte)], 'BackgroundColor','w');
+                text(16, 26, ['Länge : ', num2str(obj.len)] , 'BackgroundColor','w');
+                text(11, 26, ['Level : ', num2str(obj.level)] , 'BackgroundColor','w');
+            end
             drawnow
         end
 
@@ -133,15 +141,19 @@ classdef snake
         
         function obj = eat(obj)
             if obj.food(1) == obj.pos(1) && obj.food(2) == obj.pos(2)
-               obj.len = obj.len + 1;
-               obj.food = obj.generateFood();
-               obj.punkte = obj.punkte +1*obj.level;
+                obj.len = obj.len + 1;
+                obj.food = obj.generateFood();
+                obj.punkte = obj.punkte +1*obj.level;
+            end
+            if obj.map(obj.pos(1), obj.pos(2))
+                obj.lost = true;
             end
         end
         
         function newFood = generateFood(obj)
             newFood = obj.pos;
-            while obj.map(newFood(1),newFood(2))
+            while obj.map(newFood(1),newFood(2)) || ...
+                    (newFood(1)==obj.pos(1) && newFood(2)==obj.pos(2))
                 newFood = [randi([1 obj.X-1]), randi([1 obj.Y-1])];
             end
         return
