@@ -1,11 +1,14 @@
 classdef snake
     properties
         pos = [13 13]
+        food = [randi([1 25]), randi([1 25])]
         X = 25
         Y = 25
         map = zeros(25,25);
         len = 3
         fig
+        punkte = 0
+        level
     end
 
     methods
@@ -14,40 +17,57 @@ classdef snake
             obj.fig = figure('NumberTitle','off','Menubar','none',...
                    'Name','mSnake',...
                    'KeyPressFcn',@(src,evt)getKey(evt));
+               
+            obj.food = obj.generateFood();
             function getKey(event)
-            global key
-                if event.Key == 'w' || strcmp(event.Key, 'uparrow')
-                    if key ~= 's'
-                        key = 'w';
-                    end
-                elseif event.Key == 's' || strcmp(event.Key, 'downarrow')
-                    if key ~= 'w'
-                        key = 's';
-                    end
-                elseif event.Key == 'd' || strcmp(event.Key, 'rightarrow')
-                    if key ~= 'a'
-                        key = 'd';
-                    end
-                elseif event.Key == 'a' || strcmp(event.Key,'leftarrow')
-                    if key ~= 'd'
-                        key = 'a';
+            global key lock level
+                k = event.Key;
+                if ~lock
+                    if strcmp(k, 'w') || strcmp(k, 'uparrow')
+                        if key ~= 's'
+                            key = 'w';
+                            lock = true;
+                        end
+                    elseif  strcmp(k, 's') || strcmp(k, 'downarrow')
+                        if key ~= 'w'
+                            key = 's';
+                            lock = true;
+                        end
+                    elseif  strcmp(k, 'd') || strcmp(k, 'rightarrow')
+                        if key ~= 'a'
+                            key = 'd';
+                            lock = true;
+                        end
+                    elseif  strcmp(k, 'a') || strcmp(k,'leftarrow')
+                        if key ~= 'd'
+                            key = 'a';
+                            lock = true;
+                        end
+                    elseif strcmp(k, 'add')
+                        level = level + 1;
+                    elseif strcmp(k, 'subtract')
+                        level = level - 1;
                     end
                 end
-
             end
         end
 
         function start(obj)
+        global level
+            level = 4;
             while true
-                obj = obj.steuern();
+                obj.level = level;
+                obj = obj.steer();
                 obj = obj.updateMap();
+                obj = obj.eat();
                 obj.drawSnake();
-                pause(0.5)
+                pause(1/level/2)
             end
         end
 
-        function obj = steuern(obj)
-            global key
+        function obj = steer(obj)
+            global key lock
+            lock = false;
             switch key
                 case 'w'
                     if obj.pos(2) < obj.Y-1
@@ -74,7 +94,6 @@ classdef snake
                         obj.pos(1)=obj.Y-1;
                     end
             end
-            disp(key)
         return
         end
 
@@ -86,6 +105,7 @@ classdef snake
         end
 
         function drawSnake(obj)
+            clf
             patch([1 obj.X obj.X 1], [1 1 obj.Y obj.Y], 'k')
             axis('tight')
 
@@ -94,12 +114,37 @@ classdef snake
             x=obj.pos(1);
             y=obj.pos(2);
             patch([x x+1 x+1 x], [y y y+1 y+1], 'r')
+            
+            x=obj.food(1);
+            y=obj.food(2);
+            patch([x x+1 x+1 x], [y y y+1 y+1], 'y')
+            
+            text( 1, 26, ['Punkte: ', num2str(obj.punkte)], 'BackgroundColor','w');
+            text(11, 26, ['Länge : ', num2str(obj.len)] , 'BackgroundColor','w');
+            text(11, 26, ['Level : ', num2str(obj.level)] , 'BackgroundColor','w');
+            drawnow
         end
 
         function drawSegments(obj)
             [i,j] = find(obj.map>0);
             i = i'; j = j';
             patch([i; i+1 ; i+1; i], [ j; j; j+1; j+1], 'g')
+        end
+        
+        function obj = eat(obj)
+            if obj.food(1) == obj.pos(1) && obj.food(2) == obj.pos(2)
+               obj.len = obj.len + 1;
+               obj.food = obj.generateFood();
+               obj.punkte = obj.punkte +1*obj.level;
+            end
+        end
+        
+        function newFood = generateFood(obj)
+            newFood = obj.pos;
+            while obj.map(newFood(1),newFood(2))
+                newFood = [randi([1 obj.X-1]), randi([1 obj.Y-1])];
+            end
+        return
         end
 
     end
