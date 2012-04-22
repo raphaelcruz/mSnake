@@ -109,8 +109,6 @@ global lost X Y punkte len level
     else
         clf
         patch([1 X X 1], [1 1 Y Y], 'k')
-        axis equal
-        axis('tight')
 
         drawSegments(map)
         drawHead(pos)
@@ -123,6 +121,8 @@ global lost X Y punkte len level
         text(16, 26, ['Länge : ', num2str(len)] , 'BackgroundColor','w');
         text(11, 26, ['Level : ', num2str(level)] , 'BackgroundColor','w');
     end
+    axis equal
+    axis tight
     drawnow
 end
 

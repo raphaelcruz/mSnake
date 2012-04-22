@@ -115,7 +115,8 @@ classdef snake
             else
                 clf
                 patch([1 obj.X obj.X 1], [1 1 obj.Y obj.Y], 'k')
-                axis('tight')
+                axis equal
+                axis tight
 
                 obj.drawSegments()
                 obj.drawHead()
