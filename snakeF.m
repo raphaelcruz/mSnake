@@ -1,17 +1,31 @@
 function snakeF
 global X Y len punkte level lost
-    figure('NumberTitle','off','Menubar','none',...
-           'Name','mSnake',...
-           'KeyPressFcn',@(src,evt)getKey(evt));
-    pos = [13 13];
     X = 25;
     Y = 25;
-    map = zeros(25,25);
     len = 3;
     punkte = 0;
     level = 4 ;
-    lost = false;
-    start(pos, map)
+
+    figure('NumberTitle','off','Menubar','none',...
+           'Name','mSnake',...
+           'KeyPressFcn',@(src,evt)getKey(evt));
+
+    pos = [13 13];
+    map = zeros(X,Y);
+    food = generateFood(pos, map);
+
+    while true
+        pos = steer(pos);
+        lost = testCollision(pos, map);
+        food = eat(pos, food, map);
+        map = updateMap(pos, map);
+        drawSnake(pos, food, map);
+        if lost
+            text(1, 12, 'Verloren' , 'FontSize', 72 ,'Color','r');
+            break
+        end
+        pause(1/level/2)
+    end
 end
 
 function getKey(event)
@@ -46,22 +60,6 @@ global key lock level
     end
 end
 
-function start(pos, map)
-global level lost
-    level = 4;
-    food = generateFood(pos, map);
-    while true
-        pos = steer(pos);
-        food = eat(pos, food, map);
-        map = updateMap(pos, map);
-        drawSnake(pos, food, map);
-        if lost
-            break
-        end
-        pause(1/level/2)
-    end
-end
-
 function pos = steer(pos)
     global key lock X Y
     lock = false;
@@ -91,7 +89,6 @@ function pos = steer(pos)
                 pos(1)=Y-1;
             end
     end
-return
 end
 
 function map = updateMap(pos, map)
@@ -99,30 +96,25 @@ global len
     map(pos(1), pos(2)) = len + 1;
     map = map - 1;
     map(map<0) = 0;
-return
 end
 
 function drawSnake(pos, food, map)
-global lost X Y punkte len level
-    if lost
-        text(1, 12, 'Verloren' , 'FontSize', 72 ,'Color','r');
-    else
-        clf
-        patch([1 X X 1], [1 1 Y Y], 'k')
-
-        drawSegments(map)
-        drawHead(pos)
-
-        x=food(1);
-        y=food(2);
-        patch([x x+1 x+1 x], [y y y+1 y+1], 'y')
-
-        text( 1, 26, ['Punkte: ', num2str(punkte)], 'BackgroundColor','w');
-        text(16, 26, ['Länge : ', num2str(len)] , 'BackgroundColor','w');
-        text(11, 26, ['Level : ', num2str(level)] , 'BackgroundColor','w');
-    end
+global X Y punkte len level
+    clf
+    patch([1 X X 1], [1 1 Y Y], 'k')
     axis equal
     axis tight
+
+    drawSegments(map)
+    drawHead(pos)
+
+    x=food(1);
+    y=food(2);
+    patch([x x+1 x+1 x], [y y y+1 y+1], 'y')
+
+    text( 1, 26, ['Punkte: ', num2str(punkte)], 'BackgroundColor','w');
+    text(16, 26, ['Länge : ', num2str(len)] , 'BackgroundColor','w');
+    text(11, 26, ['Level : ', num2str(level)] , 'BackgroundColor','w');
     drawnow
 end
 
@@ -158,15 +150,16 @@ global key
 end
 
 function food = eat(pos, food, map)
-global len punkte level lost
+global len punkte level
     if food(1) == pos(1) && food(2) == pos(2)
         len = len + 1;
         food = generateFood(pos, map);
         punkte = punkte +1*level;
     end
-    if map(pos(1), pos(2))
-        lost = true;
-    end
+end
+
+function lost = testCollision(pos, map)
+    lost = map(pos(1), pos(2));
 end
 
 function newFood = generateFood(pos, map)
@@ -175,6 +168,5 @@ function newFood = generateFood(pos, map)
     [i,j] = find(A == 0);
     a = randi([1 length(i)]);
     newFood = [i(a) j(a)];
-return
 end
 
