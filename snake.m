@@ -18,8 +18,8 @@ classdef snake
             obj.fig = figure('NumberTitle','off','Menubar','none',...
                    'Name','mSnake',...
                    'KeyPressFcn',@(src,evt)getKey(evt));
-               
-            obj.food = obj.generateFood();
+
+            obj.start()
             function getKey(event)
             global key lock level
                 k = event.Key;
@@ -56,6 +56,7 @@ classdef snake
         function start(obj)
         global level
             level = 4;
+            obj.food = obj.generateFood();
             while true
                 obj.level = level;
                 obj = obj.steer();
@@ -117,11 +118,8 @@ classdef snake
                 axis('tight')
 
                 obj.drawSegments()
-
-                x=obj.pos(1);
-                y=obj.pos(2);
-                patch([x x+1 x+1 x], [y y y+1 y+1], 'r')
-
+                obj.drawHead()
+                
                 x=obj.food(1);
                 y=obj.food(2);
                 patch([x x+1 x+1 x], [y y y+1 y+1], 'y')
@@ -134,9 +132,34 @@ classdef snake
         end
 
         function drawSegments(obj)
-            [i,j] = find(obj.map>0);
+            [i,j] = find(obj.map > 0);
             i = i'; j = j';
             patch([i; i+1 ; i+1; i], [ j; j; j+1; j+1], 'g')
+        end
+        
+        function drawHead(obj)
+        global key
+            x=obj.pos(1);
+            y=obj.pos(2);
+            patch([x x+1 x+1 x], [y y y+1 y+1], 'k')
+            switch key
+                case 'w'
+                    a=[x x+1 x+0.5];
+                    b=[y y y+1];
+                case 's'
+                    a=[x x+1 x+0.5];
+                    b=[y+1 y+1 y];
+                case 'd'
+                    a=[x x x+1];
+                    b=[y+1 y y+0.5];
+                case 'a'
+                    a=[x+1 x+1 x];
+                    b=[y+1 y y+0.5];
+            end
+            scale = 1.5;
+            a=(a-x-0.5)*scale+x+0.5;
+            b=(b-y-0.5)*scale+y+0.5;
+            patch(a,b,'g')
         end
         
         function obj = eat(obj)
