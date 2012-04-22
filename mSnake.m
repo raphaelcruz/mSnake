@@ -1,4 +1,4 @@
-function snakeF
+function mSnake
 global X Y len punkte level lost
     X = 25;
     Y = 25;

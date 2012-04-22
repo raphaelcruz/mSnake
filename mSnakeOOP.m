@@ -1,4 +1,4 @@
-classdef snake
+classdef mSnakeOOP
     properties
         pos = [13 13]
         food = [randi([1 25]), randi([1 25])]
