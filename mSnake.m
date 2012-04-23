@@ -1,10 +1,11 @@
 function mSnake
-global X Y len punkte level lost
+global X Y len punkte level key
     X = 25;
     Y = 25;
     len = 3;
     punkte = 0;
     level = 4 ;
+    key = 'w';
 
     figure('NumberTitle','off','Menubar','none',...
            'Name','mSnake',...
